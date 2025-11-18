@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon District Community</title>
+    <!-- (ADD) 네온 'N' 파비콘 추가 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M14 10 V 54 H 20 V 32 L 44 54 H 50 V 10 H 44 V 32 L 20 10 H 14 Z' fill='%23f0f'/></svg>">
     <!-- Tailwind CSS 로드 -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -295,9 +297,20 @@
 
         // --- Firebase 설정 및 초기화 ---
         
-        // 캔버스 환경 변수에서 설정 로드
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // (FIX) 사용자의 Firebase 설정을 직접 여기에 붙여넣습니다.
+        // 캔버스 환경 변수(`__firebase_config`) 대신, 제공된 값으로 직접 설정합니다.
+        const firebaseConfig = {
+          apiKey: "AIzaSyCLZhWWBvaKTz45CW_s1iJnBPLTCwxRHCE", // (주의: 이 키는 공개적으로 노출될 수 있습니다)
+          authDomain: "testy-c.firebaseapp.com",
+          projectId: "testy-c",
+          storageBucket: "testy-c.firebasestorage.app",
+          messagingSenderId: "312428887371",
+          appId: "1:312428887371:web:d42fe169da1928ea127cce",
+          measurementId: "G-PB96S4313M"
+        };
+        
+        // (FIX) __app_id 변수 대신 기본 ID를 사용합니다.
+        const appId = 'default-app-id'; // Firestore 경로에 사용될 ID
 
         let app;
         let db;
@@ -305,9 +318,11 @@
         let currentUserId = null;
         let unsubscribePosts = null; // onSnapshot 리스너 해제 함수
 
-        if (Object.keys(firebaseConfig).length === 0) {
-            showModal("Firebase 설정이 로드되지 않았습니다. 앱을 새로고침 해주세요.");
-            console.error("Firebase config is missing.");
+        // (FIX) firebaseConfig가 비어있는지 확인하는 로직을 수정합니다.
+        // 설정 객체가 하드코딩되었으므로, 간단한 유효성 검사만 수행합니다.
+        if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+            showModal("Firebase 설정이 올바르지 않습니다. 코드를 확인해주세요.");
+            console.error("Firebase config is missing or invalid.");
         } else {
             try {
                 app = initializeApp(firebaseConfig);
