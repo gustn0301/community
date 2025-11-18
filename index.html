@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon District Community</title>
+    <!-- Tailwind CSS 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- 네온 효과 및 다크 모드를 위한 커스텀 CSS -->
+    <style>
+        :root {
+            --neon-pink: #f0f;
+            --neon-blue: #0ff;
+            --dark-bg: #0a0a0a;
+            --dark-surface: #121212;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* 메인 타이틀 네온 효과 (깜빡임) */
+        .neon-title {
+            font-weight: 900;
+            color: var(--neon-pink);
+            text-shadow:
+                0 0 5px var(--neon-pink),
+                0 0 10px var(--neon-pink),
+                0 0 20px var(--neon-pink),
+                0 0 40px var(--neon-pink);
+            animation: flicker-animation 3s infinite linear alternate;
+        }
+
+        @keyframes flicker-animation {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                    0 0 5px var(--neon-pink),
+                    0 0 10px var(--neon-pink),
+                    0 0 20px var(--neon-pink),
+                    0 0 40px var(--neon-pink);
+                opacity: 1;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+                opacity: 0.9;
+            }
+        }
+
+        /* 컨테이너 네온 테두리 */
+        .neon-border {
+            border: 2px solid var(--neon-blue);
+            background-color: rgba(15, 23, 42, 0.8); /* 어두운 파랑 반투명 */
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-blue) inset;
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+        }
+
+        /* 네온 버튼 */
+        .neon-button {
+            background-color: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            font-weight: 700;
+            border-radius: 8px;
+            text-shadow: 0 0 5px var(--neon-pink);
+            box-shadow: 0 0 8px var(--neon-pink), 0 0 12px var(--neon-pink) inset;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem; /* 기본 패딩 */
+        }
+
+        .neon-button:hover, .neon-button:focus {
+            background-color: var(--neon-pink);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-pink), 0 0 30px var(--neon-pink);
+            text-shadow: none;
+        }
+        
+        /* 보조 버튼 (파란색) */
+        .neon-button-blue {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue), 0 0 12px var(--neon-blue) inset;
+        }
+        .neon-button-blue:hover, .neon-button-blue:focus {
+            background-color: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue);
+            text-shadow: none;
+        }
+
+
+        /* 네온 입력 필드 */
+        .neon-input {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            border-radius: 8px;
+            box-shadow: 0 0 5px var(--neon-blue) inset;
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 0.75rem;
+        }
+
+        .neon-input::placeholder {
+            color: rgba(0, 255, 255, 0.5);
+        }
+
+        .neon-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-blue) inset;
+            border-color: var(--neon-blue);
+        }
+
+        /* 게시글 카드 */
+        .post-card {
+            background-color: var(--dark-surface);
+            border: 1px solid #333;
+            border-left: 4px solid var(--neon-pink);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+            border-radius: 5px;
+            border: 2px solid var(--dark-bg);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0ff;
+            box-shadow: 0 0 10px #0ff;
+        }
+
+        /* 로딩 스피너 */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: var(--neon-pink);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-4 md:p-8 overflow-y-scroll">
+
+    <!-- 로딩 오버레이 -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="loader"></div>
+    </div>
+
+    <!-- 메인 앱 컨텐츠 -->
+    <div id="app-container" class="max-w-7xl mx-auto">
+        <!-- 헤더 -->
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 pb-4 border-b-2 border-dashed border-gray-700">
+            <h1 class="text-4xl md:text-5xl font-black mb-4 sm:mb-0 neon-title">NEON DISTRICT</h1>
+            <div class="flex items-center space-x-4">
+                <div id="user-info" class="text-sm text-gray-400">로그아웃 상태</div>
+                <button id="write-post-button" class="neon-button-blue px-4 py-2 text-sm hidden">
+                    글쓰기
+                </button>
+                <button id="header-login-button" class="neon-button px-4 py-2 text-sm">
+                    Google 로그인
+                </button>
+                <button id="logout-button" class="neon-button px-4 py-2 text-sm hidden">
+                    로그아웃
+                </button>
+            </div>
+        </header>
+
+        <!-- 메인 그리드 (폼 + 피드) -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- 게시글 피드 -->
+            <section id="post-feed-container" class="lg:col-span-3 space-y-6">
+                <!-- 게시글이 여기에 동적으로 추가됩니다. -->
+                <div id="no-posts" class="text-center text-gray-500 py-10">
+                    아직 게시글이 없습니다. 첫 번째 글을 작성해보세요!
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- 글쓰기 모달 -->
+    <div id="post-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 hidden">
+        <div class="neon-border p-8 rounded-lg max-w-lg w-full text-center mx-4">
+            <h2 class="text-2xl font-bold text-white mb-6" style="color: var(--neon-blue); text-shadow: 0 0 5px var(--neon-blue);">
+                Create Post
+            </h2>
+            <form id="post-form" class="space-y-6">
+                <input id="post-title-input" type="text" class="neon-input" placeholder="제목..." required>
+                <textarea id="post-content-textarea"
+                    class="w-full h-40 p-3 neon-input text-lg"
+                    placeholder="무슨 생각을 하고 있나요...?"
+                    required
+                ></textarea>
+                
+                <div class="flex items-center justify-start space-x-2">
+                    <input id="anonymous-checkbox" type="checkbox" class="form-checkbox h-5 w-5 rounded bg-gray-800 border-neon-blue text-neon-blue focus:ring-neon-blue">
+                    <label for="anonymous-checkbox" class="text-gray-300">익명으로 게시</label>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" id="cancel-post-button" class="neon-button-blue px-6 py-2">
+                        취소
+                    </button>
+                    <button type="submit" id="submit-post-button" class="neon-button px-6 py-2">
+                        게시하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- 커스텀 모달 (alert/confirm 대용) -->
+    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="neon-border p-8 rounded-lg max-w-sm w-full text-center mx-4">
+            <p id="modal-message" class="text-lg text-white mb-6"></p>
+            <button id="modal-close-button" class="neon-button px-6 py-2">
+                확인
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK 및 앱 로직 -->
+    <script type="module">
+        // Firebase 모듈 임포트
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signOut,
+            GoogleAuthProvider,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot, 
+            query, 
+            serverTimestamp, 
+            setLogLevel 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- DOM 요소 선택 ---
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const appContainer = document.getElementById('app-container');
+        const headerLoginButton = document.getElementById('header-login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const writePostButton = document.getElementById('write-post-button');
+        const userInfo = document.getElementById('user-info');
+        const postFeedContainer = document.getElementById('post-feed-container');
+        const noPostsMessage = document.getElementById('no-posts');
+
+        // 글쓰기 모달 요소
+        const postModal = document.getElementById('post-modal');
+        const postForm = document.getElementById('post-form');
+        const postTitleInput = document.getElementById('post-title-input');
+        const postContentTextarea = document.getElementById('post-content-textarea');
+        const anonymousCheckbox = document.getElementById('anonymous-checkbox');
+        const cancelPostButton = document.getElementById('cancel-post-button');
+        const submitPostButton = document.getElementById('submit-post-button'); // 폼 제출 버튼 (submit 타입)
+
+        // 알림 모달 요소
+        const modalContainer = document.getElementById('modal-container');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseButton = document.getElementById('modal-close-button');
+
+        // --- Firebase 설정 및 초기화 ---
+        
+        // 캔버스 환경 변수에서 설정 로드
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let app;
+        let db;
+        let auth;
+        let currentUserId = null;
+        let unsubscribePosts = null; // onSnapshot 리스너 해제 함수
+
+        if (Object.keys(firebaseConfig).length === 0) {
+            showModal("Firebase 설정이 로드되지 않았습니다. 앱을 새로고침 해주세요.");
+            console.error("Firebase config is missing.");
+        } else {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('Debug'); // Firebase 로그 활성화
+                
+                // 앱 시작
+                initializeAppLogic();
+
+            } catch (error) {
+                console.error("Firebase 초기화 오류:", error);
+                showModal(`초기화 오류: ${error.message}`);
+            }
+        }
+
+        // --- 모달 함수 ---
+        function showModal(message) {
+            modalMessage.textContent = message;
+            modalContainer.classList.remove('hidden');
+        }
+
+        modalCloseButton.addEventListener('click', () => {
+            modalContainer.classList.add('hidden');
+        });
+
+        // --- UI 상태 관리 함수 ---
+        function showLoading(isLoading) {
+            if (isLoading) {
+                loadingOverlay.classList.remove('hidden');
+            } else {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        // --- 앱 메인 로직 ---
+        function initializeAppLogic() {
+            showLoading(true); // 인증 상태 확인 중 로딩 표시
+
+            // 인증 상태 리스너
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // 사용자가 로그인됨
+                    currentUserId = user.uid;
+                    userInfo.textContent = user.displayName || user.email;
+                    writePostButton.classList.remove('hidden');
+                    logoutButton.classList.remove('hidden');
+                    headerLoginButton.classList.add('hidden');
+
+                    // (FIX) 인증이 완료된 후에만 게시글 리스너를 설정합니다.
+                    setupPostListener();
+
+                } else {
+                    // 사용자가 로그아웃됨
+                    currentUserId = null;
+                    userInfo.textContent = "로그아웃 상태";
+                    writePostButton.classList.add('hidden');
+                    logoutButton.classList.add('hidden');
+                    headerLoginButton.classList.remove('hidden');
+
+                    // (FIX) 로그아웃 시 리스너를 해제하고 게시글을 비웁니다.
+                    if (unsubscribePosts) {
+                        unsubscribePosts();
+                        unsubscribePosts = null;
+                    }
+                    clearPosts(); // 게시글 피드를 비웁니다.
+                }
+                
+                // (FIX) 리스너 설정을 위로 옮기고, 로딩 표시는 항상 마지막에 숨깁니다.
+                showLoading(false); // 인증 상태 확인 완료
+            });
+
+            // Google 로그인 버튼 클릭
+            headerLoginButton.addEventListener('click', async () => {
+                showLoading(true);
+                const provider = new GoogleAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    // onAuthStateChanged가 UI 전환을 처리
+                } catch (error) {
+                    console.error("로그인 오류:", error);
+                    showModal(`로그인 실패: ${error.message}`);
+                    showLoading(false);
+                }
+            });
+
+            // 로그아웃 버튼 클릭
+            logoutButton.addEventListener('click', async () => {
+                showLoading(true);
+                try {
+                    await signOut(auth);
+                    // onAuthStateChanged가 UI 전환을 처리
+                } catch (error) {
+                    console.error("로그아웃 오류:", error);
+                    showModal(`로그아웃 실패: ${error.message}`);
+                    showLoading(false);
+                }
+            });
+
+            // 글쓰기 버튼 클릭 (모달 열기)
+            writePostButton.addEventListener('click', () => {
+                if (!auth.currentUser) {
+                    showModal("로그인이 필요합니다.");
+                    return;
+                }
+                postModal.classList.remove('hidden');
+            });
+
+            // 글쓰기 취소 버튼
+            cancelPostButton.addEventListener('click', () => {
+                postModal.classList.add('hidden');
+                postForm.reset(); // 폼 내용 초기화
+            });
+
+            // 게시글 폼 제출
+            postForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const title = postTitleInput.value.trim();
+                const content = postContentTextarea.value.trim();
+                const isAnonymous = anonymousCheckbox.checked;
+                const user = auth.currentUser;
+
+                if (!user) {
+                    showModal("로그인이 필요합니다. 다시 로그인해주세요.");
+                    return;
+                }
+                if (!title || !content) {
+                    showModal("제목과 내용을 모두 입력하세요.");
+                    return;
+                }
+
+                submitPostButton.disabled = true; // 중복 제출 방지
+                showLoading(true);
+
+                // Firestore에 데이터 추가
+                try {
+                    const postsColPath = `/artifacts/${appId}/public/data/posts`;
+                    await addDoc(collection(db, postsColPath), {
+                        title: title,
+                        content: content,
+                        authorId: user.uid,
+                        authorName: user.displayName || user.email, // 관리자 확인용 이름
+                        isAnonymous: isAnonymous,
+                        createdAt: serverTimestamp() // 서버 시간 기준
+                    });
+                    
+                    postModal.classList.add('hidden'); // 모달 닫기
+                    postForm.reset(); // 폼 초기화
+
+                } catch (error) {
+                    console.error("게시글 추가 오류:", error);
+                    showModal(`게시글 작성에 실패했습니다: ${error.message}`);
+                } finally {
+                    submitPostButton.disabled = false;
+                    showLoading(false);
+                }
+            });
+        }
+        
+        // --- Firestore 게시글 리스너 ---
+        function setupPostListener() {
+            if (unsubscribePosts) {
+                unsubscribePosts(); // 기존 리스너 해제
+            }
+
+            const postsColPath = `/artifacts/${appId}/public/data/posts`;
+            const q = query(collection(db, postsColPath)); // 정렬은 클라이언트에서 수행
+
+            unsubscribePosts = onSnapshot(q, (snapshot) => {
+                const posts = [];
+                snapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+
+                // 클라이언트 측에서 시간순 정렬 (최신순)
+                posts.sort((a, b) => {
+                    const timeA = a.createdAt?.seconds || 0;
+                    const timeB = b.createdAt?.seconds || 0;
+                    return timeB - timeA;
+                });
+
+                renderPosts(posts);
+
+            }, (error) => {
+                console.error("게시글 로드 오류:", error);
+                showModal("게시글을 불러오는 데 실패했습니다.");
+            });
+        }
+
+        // --- 게시글 렌더링 ---
+        function renderPosts(posts) {
+            postFeedContainer.innerHTML = ''; // 피드 비우기
+
+            if (posts.length === 0) {
+                noPostsMessage.style.display = 'block';
+                postFeedContainer.appendChild(noPostsMessage);
+                return;
+            }
+            
+            noPostsMessage.style.display = 'none';
+
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post-card p-5 rounded-lg';
+                
+                const date = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleString('ko-KR') : '방금 전';
+                
+                // 익명 여부에 따라 작성자 표시
+                const authorDisplay = post.isAnonymous 
+                    ? "익명" 
+                    : escapeHTML(post.authorName || 'Unknown');
+
+                // XSS 방지를 위해 HTML 이스케이프 처리
+                const title = escapeHTML(post.title || '제목 없음');
+                const content = escapeHTML(post.content || '');
+
+                postElement.innerHTML = `
+                    <h3 class="text-xl font-bold text-white mb-2" style="color: var(--neon-pink); text-shadow: 0 0 3px var(--neon-pink);">
+                        ${title}
+                    </h3>
+                    <p class="text-base text-gray-300 mb-4 whitespace-pre-wrap">${content}</p>
+                    <div class="text-xs text-gray-500 flex justify-between items-center">
+                        <span>By: ${authorDisplay}</span>
+                        <span>${escapeHTML(date)}</span>
+                    </div>
+                `;
+                postFeedContainer.appendChild(postElement);
+            });
+        }
+
+        function clearPosts() {
+            postFeedContainer.innerHTML = '';
+            noPostsMessage.style.display = 'block';
+            postFeedContainer.appendChild(noPostsMessage);
+        }
+
+        // 간단한 XSS 방지용 HTML 이스케이프 함수
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>"']/g, function(match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
+            });
+        }
+
+    </script>
+
+</body>
+</html>
